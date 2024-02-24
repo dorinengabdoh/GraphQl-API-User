@@ -1,0 +1,19 @@
+{
+  "name": "graphql-api",
+  "version": "1.0.0",
+  "description": "Cette API est une application Node.js utilisant Express et GraphQL pour gérer les opérations CRUD (Create, Read, Update, Delete) sur les utilisateurs. Elle utilise SQLite comme base de données pour stocker les informations des utilisateurs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.3.7",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.3.0"
+  }
+}
