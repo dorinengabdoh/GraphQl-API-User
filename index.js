@@ -1,14 +1,19 @@
-const express = require('express');
-const { graphqlHTTP } = require('express-graphql');
-const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList, GraphQLNonNull } = require('graphql');
-const cors = require('cors');
+const express = require("express");
+const { graphqlHTTP } = require("express-graphql");
+const {
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLList,
+  GraphQLNonNull,
+} = require("graphql");
+const cors = require("cors");
 
 // Import types
-const UserType =  require("./types/users")
+const UserType = require("./types/users");
 
 // Import controller
-const UsersController = require("./controller/UsersController")
-
+const UsersController = require("./controller/UsersController");
 
 // Database
 let users = [
@@ -18,7 +23,7 @@ let users = [
     last_name: "Doe",
     email: "john.doe@example.com",
     birth_date: "1990-01-01",
-    gender: "Masculin"
+    gender: "Masculin",
   },
   {
     id: "2",
@@ -26,7 +31,7 @@ let users = [
     last_name: "Smith",
     email: "jane.smith@example.com",
     birth_date: "1985-05-15",
-    gender: "Féminin"
+    gender: "Féminin",
   },
   {
     id: "3",
@@ -34,7 +39,7 @@ let users = [
     last_name: "Johnson",
     email: "michael.johnson@example.com",
     birth_date: "1988-09-30",
-    gender: "Masculin"
+    gender: "Masculin",
   },
   {
     id: "4",
@@ -42,7 +47,7 @@ let users = [
     last_name: "nana",
     email: "nana.johnson@example.com",
     birth_date: "1968-6-30",
-    gender: "Féminin"
+    gender: "Féminin",
   },
   {
     id: "5",
@@ -50,18 +55,15 @@ let users = [
     last_name: "armel",
     email: "armel.johnson@example.com",
     birth_date: "2008-6-30",
-    gender: "Masculin"
-  }
+    gender: "Masculin",
+  },
 ];
 
-
 const schema = new GraphQLSchema({
-
   // Queries (For retrieve data)
   query: new GraphQLObjectType({
-    name: 'Query',
+    name: "Query",
     fields: {
-
       // Get user by id
       single_user: {
         type: UserType,
@@ -69,7 +71,7 @@ const schema = new GraphQLSchema({
           id: { type: GraphQLString },
         },
         resolve: (_, args) => {
-          return users.find(user => user.id === args.id);
+          return users.find((user) => user.id === args.id);
         },
       },
 
@@ -83,12 +85,10 @@ const schema = new GraphQLSchema({
     },
   }),
 
-
   // Mutations for editing data
   mutation: new GraphQLObjectType({
-    name: 'Mutation',
+    name: "Mutation",
     fields: {
-
       // Create a user
       add_new_user: {
         type: UserType,
@@ -112,7 +112,33 @@ const schema = new GraphQLSchema({
           return newUser;
         },
       },
+      // edit a newUser
+      editUser: {
+        type: UserType,
+        args: {
+          id: { type: new GraphQLNonNull(GraphQLID) },
+          first_name: { type: GraphQLString },
+          last_name: { type: GraphQLString },
+          email: { type: GraphQLString },
+          birth_date: { type: GraphQLString },
+          gender: { type: GraphQLString },
+        },
+        resolve: (_, args) => {
+          const { id, ...updatedFields } = args;
 
+          const userIndex = users.findIndex((user) => user.id === id);
+
+          if (userIndex === -1) {
+            throw new Error(`User with ID ${id} not found.`);
+          }
+
+          const updatedUser = { ...users[userIndex], ...updatedFields };
+
+          users[userIndex] = updatedUser;
+
+          return updatedUser;
+        },
+      },
 
       // Delete a user by id
       delete_user_by_id: {
@@ -121,7 +147,7 @@ const schema = new GraphQLSchema({
           id: { type: new GraphQLNonNull(GraphQLString) },
         },
         resolve: (_, args) => {
-          const index = users.findIndex(user => user.id === args.id);
+          const index = users.findIndex((user) => user.id === args.id);
           if (index !== -1) {
             const deletedUser = users[index];
             users.splice(index, 1);
@@ -138,11 +164,13 @@ const app = express();
 
 app.use(cors());
 
-app.use('/graphql', graphqlHTTP({
-  schema,
-  graphiql: true,
-}));
-
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema,
+    graphiql: true,
+  })
+);
 
 app.listen(8000, () => {
   console.log(`Server started on: http://localhost:${8000}`);
