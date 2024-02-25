@@ -116,7 +116,7 @@ const schema = new GraphQLSchema({
       editUser: {
         type: UserType,
         args: {
-          id: { type: new GraphQLNonNull(GraphQLID) },
+          id: { type: new GraphQLNonNull(GraphQLString) },
           first_name: { type: GraphQLString },
           last_name: { type: GraphQLString },
           email: { type: GraphQLString },
